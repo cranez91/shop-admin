@@ -37,7 +37,7 @@
       submit () {
         this.form.post('api/auth/login')
           .then((response) => {
-            localStorage.setItem('laravel-token', JSON.stringify(response.data.access_token));
+            window.store.commit("setToken", response.data.access_token);
             this.$router.push('/admin/users');
           })
           .catch((error) => {

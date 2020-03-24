@@ -59,7 +59,7 @@
     methods: {
       logout () {
         var url_to = "/api/auth/logout";
-        var laravelToken = JSON.parse(localStorage.getItem('laravel-token'));
+        var laravelToken = window.store.state.laravelToken;
         axios({
           method: "GET",
           url: url_to,
@@ -67,7 +67,7 @@
             "Authorization": "Bearer " + laravelToken
           }
         }).then((response)=>{
-          localStorage.removeItem("laravel-token");
+          window.store.commit("setToken", null);
           this.$router.push('/login');
         }).catch ((error) => {
           Swal.fire({

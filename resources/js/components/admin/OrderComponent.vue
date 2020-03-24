@@ -191,7 +191,7 @@
             });
           },
           loadOrders() {
-            var laravelToken = JSON.parse(localStorage.getItem('laravel-token'));
+            var laravelToken = window.store.state.laravelToken;
             //pick data from controller and push it into orders object
             axios({
               method: "GET",

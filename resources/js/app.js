@@ -27,7 +27,8 @@ import  createPersistedState  from  'vuex-persistedstate'
 window.store = new Vuex.Store({
   state: {
       productsCount: 0,
-      cartId: null
+      cartId: null,
+      laravelToken: null
   },
   mutations: {
     decrement(state){
@@ -41,6 +42,9 @@ window.store = new Vuex.Store({
     },
     setCart(state, value){
       return state.cartId = value
+    },
+    setToken(state, value){
+      return state.laravelToken = value
     }
   },
   plugins: [createPersistedState()]
@@ -81,7 +85,7 @@ router.beforeEach((to, from, next) => {
   //const authenticated = store.state.userToken
   const hasCart = window.store.state.cartId ?? null;
   const hasCartItems = window.store.state.productsCount ?? 0;
-  const authenticated = localStorage.getItem('laravel-token') ?? null;
+  const authenticated = window.store.state.laravelToken ?? null;
   const onlyLoggedOut = to.matched.some(record => record.meta.onlyLoggedOut)
   const requiredCart = to.matched.some(record => record.meta.requiredCart)
   const isPublic = to.matched.some(record => record.meta.public)

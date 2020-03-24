@@ -14,7 +14,8 @@ use Illuminate\Http\Request;
 */
 
 Route::apiResources(['cart' => 'API\ProductInShoppingCartsController']);
-Route::apiResources(['products' => 'API\ProductController']);
+Route::get('products', 'API\ProductController@index');
+Route::get('products/{id}', 'API\ProductController@show');
 Route::post('cart/plus', 'API\ProductInShoppingCartsController@plus');
 Route::post('cart/minus', 'API\ProductInShoppingCartsController@minus');
 Route::post('checkout', 'API\OrdersController@store');
@@ -23,6 +24,9 @@ Route::group(['middleware' => 'auth:api'], function () {
 	Route::apiResources(['users' => 'API\UserController']);
 	Route::get('orders', 'API\OrdersController@index');
 	Route::put('upload/file/{id}', 'UserController@uploadFile');
+	Route::post('products', 'API\ProductController@store');
+	Route::put('products/{id}', 'API\ProductController@update');
+	Route::delete('products/{id}', 'API\ProductController@destroy');
 });
 
 Route::group(['prefix' => 'auth'], function () {

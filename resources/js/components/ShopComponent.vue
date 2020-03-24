@@ -57,7 +57,6 @@
         },
         methods: {
           addToCart(product){
-            //var cartId = localStorage.getItem("data") ?? null;
             var cartId = window.store.state.cartId ?? null;
             axios({
               method: "POST",

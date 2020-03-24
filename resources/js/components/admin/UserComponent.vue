@@ -111,6 +111,9 @@
             }
         },
         methods: {
+          getToken(){
+            return window.store.state.laravelToken;
+          },
           prepareCreateForm(){
             this.form.clear();
             this.form.reset();
@@ -125,51 +128,46 @@
              this.form.fill(user)
           },
           updateUser(){
-            var laravelToken = JSON.parse(localStorage.getItem('laravel-token'));
-             this.form.submit('put','/api/users/'+this.form.id, {headers: { "Authorization": "Bearer " + laravelToken }})
-                 .then(()=>{
-                     Toast.fire({
-                        icon: 'success',
-                        title: 'User updated successfully'
-                      })
-                      Fire.$emit('AfterCreatedUserLoadIt');
-                      this.dialog = false
-                 })
-                 .catch(()=>{
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Oops...',
-                      text: "Something went wrong."
-                    })
-                 })
+            this.form.submit('put','/api/users/'+this.form.id, {headers: { "Authorization": "Bearer " + this.getToken() }})
+              .then(()=>{
+                  Toast.fire({
+                    icon: 'success',
+                    title: 'User updated successfully'
+                  })
+                  Fire.$emit('AfterCreatedUserLoadIt');
+                  this.dialog = false
+              })
+              .catch(()=>{
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: "Something went wrong."
+                  })
+              })
           },
           loadUsers() {
             //pick data from controller and push it into users object
-            var laravelToken = JSON.parse(localStorage.getItem('laravel-token'));
             axios({
               method: "GET",
               url: "/api/users",
               headers: {
-                "Authorization": "Bearer " + laravelToken
+                "Authorization": "Bearer " + this.getToken()
               }
             }).then( data => (this.users = data.data));
           },
           createUser(){
-              var laravelToken = JSON.parse(localStorage.getItem('laravel-token'));
               this.$Progress.start()
-              this.form.submit('post','/api/users', {headers: { "Authorization": "Bearer " + laravelToken }})
+              this.form.submit('post','/api/users', {headers: { "Authorization": "Bearer " + this.getToken() }})
                   .then(() => {
-                     
-                      Fire.$emit('AfterCreatedProductLoadIt'); //custom events
+                    Fire.$emit('AfterCreatedProductLoadIt'); //custom events
+                    Toast.fire({
+                      icon: 'success',
+                      title: 'User created successfully'
+                    })
 
-                          Toast.fire({
-                            icon: 'success',
-                            title: 'User created successfully'
-                          })
-
-                          this.$Progress.finish()
-                          this.dialog = false
-                          this.loadUsers();
+                    this.$Progress.finish()
+                    this.dialog = false
+                    this.loadUsers();
                   })
                   .catch((error ) => {
                     
@@ -187,7 +185,6 @@
                   })
           },
           deleteUser(id) {
-            var laravelToken = JSON.parse(localStorage.getItem('laravel-token'));
             Swal.fire({
               title: 'Are you sure?',
               text: "You won't be able to revert this!",
@@ -200,23 +197,22 @@
                 
               if (result.value) {
                 //Send Request to server
-                this.form.submit('delete','/api/users/'+id, {headers: { "Authorization": "Bearer " + laravelToken }})
-                    .then((response)=> {
-                            Swal.fire(
-                              'Deleted!',
-                              'User deleted successfully',
-                              'success'
-                            )
-                    this.loadUsers();
+                this.form.submit('delete','/api/users/'+id, {headers: { "Authorization": "Bearer " + this.getToken() }})
+                  .then((response)=> {
+                    Swal.fire(
+                      'Deleted!',
+                      'User deleted successfully',
+                      'success'
+                    )
+                  this.loadUsers();
 
-                    }).catch(() => {
-                        Swal.fire({
-                          icon: 'error',
-                          title: 'Oops...',
-                          text: 'Something went wrong!',
-                          footer: '<a href>Why do I have this issue?</a>'
-                        })
+                  }).catch(() => {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: 'Something went wrong!'
                     })
+                  })
                 }
 
             })

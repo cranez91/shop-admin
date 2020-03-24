@@ -112,6 +112,9 @@
             }
         },
         methods: {
+          getToken(){
+            return window.store.state.laravelToken;
+          },
           fileChanged(e) {
               var file = e;
               if (!file)
@@ -154,8 +157,7 @@
               this.form.my_file = this.my_file;
               this.form.file_type = this.file_type;
             }
-            var laravelToken = JSON.parse(localStorage.getItem('laravel-token'));
-             this.form.submit("put", '/api/products/'+this.form.id, {headers: { "Authorization": "Bearer " + laravelToken }})
+             this.form.submit("put", '/api/products/'+this.form.id, {headers: { "Authorization": "Bearer " + this.getToken() }})
                  .then((response)=>{
                     
                     Toast.fire({
@@ -174,13 +176,12 @@
                  })
           },
           loadProducts() {
-            var laravelToken = JSON.parse(localStorage.getItem('laravel-token'));
             //pick data from controller and push it into products object
             axios({
               method: "GET",
               url: "/api/products",
               headers: {
-                "Authorization": "Bearer " + laravelToken
+                "Authorization": "Bearer " + this.getToken()
               }
             }).then( data => (this.products = data.data));
           },
@@ -200,32 +201,31 @@
 
             this.form.my_file = this.my_file;
             this.form.file_type = this.file_type;
-            var laravelToken = JSON.parse(localStorage.getItem('laravel-token'));
-              this.$Progress.start()
-              this.form.submit("post", '/api/products', {headers: { "Authorization": "Bearer " + laravelToken }})
-                  .then((response) => {
-                      const input = this.$refs.fileInput;
-                      input.type = 'text';
-                      input.type = 'file';
-                      Fire.$emit('AfterCreatedProductLoadIt'); //custom events
+            this.$Progress.start()
+            this.form.submit("post", '/api/products', {headers: { "Authorization": "Bearer " + this.getToken() }})
+                .then((response) => {
+                    const input = this.$refs.fileInput;
+                    input.type = 'text';
+                    input.type = 'file';
+                    Fire.$emit('AfterCreatedProductLoadIt'); //custom events
 
-                      Toast.fire({
-                        icon: 'success',
-                        title: 'Product created successfully'
-                      })
-
-                      this.$Progress.finish()
-                      this.dialog = false
-                      this.loadProducts()
-                  })
-                  .catch((response) => {
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Oops...',
-                      text: response.data.msg
+                    Toast.fire({
+                      icon: 'success',
+                      title: 'Product created successfully'
                     })
-                     
+
+                    this.$Progress.finish()
+                    this.dialog = false
+                    this.loadProducts()
+                })
+                .catch((response) => {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: response.data.msg
                   })
+                   
+                })
           },
           validateImage(){
             var types = ["image/jpeg", "image/png"];
@@ -251,9 +251,8 @@
             }).then((result) => {
                 
               if (result.value) {
-                var laravelToken = JSON.parse(localStorage.getItem('laravel-token'));
                 //Send Request to server
-                this.form.submit("delete", '/api/products/'+id, {headers: { "Authorization": "Bearer " + laravelToken }})
+                this.form.submit("delete", '/api/products/'+id, {headers: { "Authorization": "Bearer " + this.getToken() }})
                     .then((response)=> {
                             Swal.fire(
                               'Deleted!',
@@ -266,8 +265,7 @@
                         Swal.fire({
                           icon: 'error',
                           title: 'Oops...',
-                          text: 'Something went wrong!',
-                          footer: '<a href>Why do I have this issue?</a>'
+                          text: 'Something went wrong!'
                         })
                     })
                 }
